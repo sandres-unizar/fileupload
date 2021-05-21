@@ -1,8 +1,17 @@
-<html xmlns:th="https://www.thymeleaf.org">
+<html xmlns:th="https://www.thymeleaf.org" xmlns:ath="http://www.w3.org/1999/xhtml">
 <body>
 
 <div th:if="${message}">
     <h2 th:text="${message}"/>
+</div>
+
+<div>
+    <form method="GET"  ath:action="@{/Usuarios}" th:object="${FileDbUsuarios}">
+        <table>
+            <tr><td>DB URL:</td><td><input type="text" name="message" /></td></tr>
+            <tr><td></td><td><input type="submit" value="List" /></td></tr>
+        </table>
+    </form>
 </div>
 
 <div>
@@ -24,7 +33,7 @@
 </div>
 
 <div>
-    <form method="GET"  action="/Download">
+    <form method="GET"  action="/files/{id}">
         <table>
             <tr><td>File id:</td><td><input type="text" name="file" /></td></tr>
             <tr><td></td><td><input type="submit" value="Download" /></td></tr>

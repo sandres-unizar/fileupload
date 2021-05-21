@@ -13,11 +13,17 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Controller
-@CrossOrigin("http://localhost:8888")
+@CrossOrigin("http://localhost:8888/")
 public class FileController {
 
     @Autowired
     private FileStorageService storageService;
+
+    private final FileDBUsuariosRepository repository;
+
+    FileController(FileDBUsuariosRepository repository) {
+        this.repository = repository;
+    }
 
     @PostMapping("/upload")
     public ResponseEntity<ResponseMessage> uploadFile(@RequestParam("file") MultipartFile file) {
@@ -52,12 +58,50 @@ public class FileController {
         return ResponseEntity.status(HttpStatus.OK).body(files);
     }
 
-    @GetMapping("/Download")
+
+    @GetMapping("/files/{id}")
     public ResponseEntity<byte[]> getFile(@PathVariable String id) {
-        FileDB fileDB = storageService.getFile("http://localhost:8888/" + id);
+        FileDB fileDB = storageService.getFile(id);
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileDB.getName() + "\"")
                 .body(fileDB.getData());
+    }
+
+    @GetMapping("/Usuarios")
+    List<FileDbUsuarios> all() {
+        return repository.findAll();
+    }
+
+    @PostMapping("/Usuarios")
+    FileDbUsuarios newUser(@RequestBody FileDbUsuarios newUser) {
+        return repository.save(newUser);
+    }
+
+    @GetMapping("/Usuarios/{id}")
+    FileDbUsuarios one(@PathVariable String id) {
+
+        return repository.findById(id)
+                .orElseThrow(() -> new EmployeeNotFoundException(id));
+    }
+
+    @PutMapping("/Usuarios/{id}")
+    FileDbUsuarios replaceEmployee(@RequestBody FileDbUsuarios newUser, @PathVariable String id) {
+
+        return repository.findById(id)
+                .map(employee -> {
+                    employee.setName(newUser.getName());
+                    employee.setGrupo(newUser.getGrupo());
+                    return repository.save(employee);
+                })
+                .orElseGet(() -> {
+                    newUser.setId(id);
+                    return repository.save(newUser);
+                });
+    }
+
+    @DeleteMapping("/Usuarios/{id}")
+    void deleteEmployee(@PathVariable String id) {
+        repository.deleteById(id);
     }
 }

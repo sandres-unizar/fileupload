@@ -28,4 +28,22 @@ public class FileStorageService {
     public Stream<FileDB> getAllFiles() {
         return fileDBRepository.findAll().stream();
     }
+
+    @Autowired
+    private FileDBUsuariosRepository fileDBusuariosRepository;
+
+    public FileDbUsuarios storeUsers(String User) throws IOException {
+        String userName = StringUtils.cleanPath(User);
+        FileDbUsuarios FileDbUsuarios = new FileDbUsuarios(userName, "Cualquiera");
+
+        return fileDBusuariosRepository.save(FileDbUsuarios);
+    }
+
+    public FileDbUsuarios getUsers(String id) {
+        return fileDBusuariosRepository.findById(id).get();
+    }
+
+    public Stream<FileDbUsuarios> getAllUsers() {
+        return fileDBusuariosRepository.findAll().stream();
+    }
 }
